@@ -1,2 +1,2 @@
 # Homework-SIIT
-In this repository homework will be periodically added, as requested
+In this repository homework will be periodically added, as requested.
