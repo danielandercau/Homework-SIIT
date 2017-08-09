@@ -5,6 +5,8 @@ import static ro.siit.BubbleSort.getBubbleSort;
 import static ro.siit.BestSalesRepresentative.getBestSalesRep;
 import static ro.siit.CompanyRevenue.getCompanyRevenue;
 import static ro.siit.BestDept.*;
+import static ro.siit.GetArray.getArray;
+import static sun.plugin2.gluegen.runtime.BufferFactory.getArray;
 
 /**
  * Created by Dani on 29-Jul-17.
@@ -76,10 +78,8 @@ public class SalesRepresentativeOrder {
          */
 
         System.out.println("The unsorted array is: ");
-        System.out.println();
-        for (int i = 0; i < allSalesReps.length; i++)
-            System.out.println(allSalesReps[i].name + " - $" + allSalesReps[i].revenue);
-        System.out.println();
+
+        getArray();
 
         /**
          * Here we call for the method bubbleSort() which is located in the BubbleSort.java file.
@@ -91,12 +91,9 @@ public class SalesRepresentativeOrder {
          * Here we display the sorted array on the console
          */
 
-        System.out.println("The sorted array is:");
-        System.out.println();
-        for (int i = 0; i < allSalesReps.length; i++)
-            System.out.println(allSalesReps[i].name + " - $" + allSalesReps[i].revenue);
-        System.out.println();
+        System.out.println("The sorted array is: ");
 
+        getArray();
 
         /**
          * The following three blocks of code display the best sales representative, the best department's name and revenue, and the company's total revenue.
