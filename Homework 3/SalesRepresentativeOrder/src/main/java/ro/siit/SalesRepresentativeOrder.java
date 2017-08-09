@@ -99,7 +99,7 @@ public class SalesRepresentativeOrder {
 
 
         /**
-         * The following three blocks of code display the best sales representative, the best department's revenue, and the company's total revenue.
+         * The following three blocks of code display the best sales representative, the best department's name and revenue, and the company's total revenue.
          */
 
         SalesRepresentative bestSaleRep = getBestSalesRep();
@@ -112,7 +112,7 @@ public class SalesRepresentativeOrder {
 
         System.out.println();
         SalesRepresentative bestDept = getBestDept();
-        System.out.println("The best department has generated $" + bestDept.revenue + " worth of revenue");
+        System.out.println("The best department is " + bestDept.name + " and it has generated $" + bestDept.revenue + " worth of revenue!");
 
 
     }

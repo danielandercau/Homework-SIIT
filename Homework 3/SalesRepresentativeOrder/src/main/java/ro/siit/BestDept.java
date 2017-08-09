@@ -4,7 +4,7 @@ import static ro.siit.SalesRepresentativeOrder.*;
 
 /**
  * Created by Dani on 05-Aug-17.
- * This method returns every department's revenue and uses the four returned values to compute the best department's revenue.
+ * This method returns every department's revenue and uses the four returned values to compute the best department's revenue and name.
  */
 public class BestDept {
 
@@ -55,13 +55,19 @@ public class BestDept {
         SalesRepresentative deptTwoRev = getDeptTwoRev();
         SalesRepresentative deptThreeRev = getDeptThreeRev();
         SalesRepresentative deptFourRev = getDeptFourRev();
-        bestDept.revenue = deptOneRev.revenue;
-        if (deptTwoRev.revenue > bestDept.revenue)
-            bestDept.revenue = deptTwoRev.revenue;
-        if (deptThreeRev.revenue > bestDept.revenue)
-            bestDept.revenue = deptThreeRev.revenue;
-        if (deptFourRev.revenue > bestDept.revenue)
-            bestDept.revenue = deptFourRev.revenue;
+
+        getBestDeptNameRev(bestDept, deptOneRev);
+        getBestDeptNameRev(bestDept, deptTwoRev);
+        getBestDeptNameRev(bestDept, deptThreeRev);
+        getBestDeptNameRev(bestDept, deptFourRev);
+
         return bestDept;
+    }
+
+    private static void getBestDeptNameRev(SalesRepresentative bestDept, SalesRepresentative deptOneRev) {
+        if (deptOneRev.revenue > bestDept.revenue) {
+            bestDept.revenue = deptOneRev.revenue;
+            bestDept.name = deptOneRev.name;
+        }
     }
 }
