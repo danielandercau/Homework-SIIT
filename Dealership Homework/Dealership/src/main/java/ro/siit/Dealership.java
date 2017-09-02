@@ -5,13 +5,37 @@ package ro.siit;
  */
 public class Dealership {
 
-    String dealershipName;
-    int vehicleId;
-    double price;
-    int stockNo;
-    GreenBonusProgram greenBonusProgram = new GreenBonusProgram();
+    private String dealershipName = "Get Electric";
+    private int vehicleId;
+    private double price;
+    private int stockNo;
 
-    public static void main(String[] args) {
+    public String getDealershipName() {
+        return dealershipName;
+    }
 
+    public int getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(int vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getStockNo() {
+        return stockNo;
+    }
+
+    public void setStockNo(int stockNo) {
+        this.stockNo = stockNo;
     }
 }
+

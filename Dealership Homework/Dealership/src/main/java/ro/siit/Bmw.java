@@ -5,5 +5,13 @@ package ro.siit;
  */
 public class Bmw extends ElectricVehicle {
 
-    String bmwSpecificThing;
+    private String bmwSpecificThing;
+
+    public String getBmwSpecificThing() {
+        return bmwSpecificThing;
+    }
+
+    public void setBmwSpecificThing(String bmwSpecificThing) {
+        this.bmwSpecificThing = bmwSpecificThing;
+    }
 }

@@ -5,6 +5,9 @@ package ro.siit;
  */
 public class Manufacturer extends Dealership {
 
-    String manufacturerName;
+    private String manufacturerName;
 
+    public void setManufacturerName(String manufacturerName) {
+        this.manufacturerName = manufacturerName;
+    }
 }
