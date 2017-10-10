@@ -1,27 +1,13 @@
 package ro.siit;
 
 /**
- * Created by Dani on 25-Aug-17.
+ * Created by Dani on 10-Oct-17.
  */
 public class Customer {
 
     private String customerName;
     private int customerId;
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public int getCustomerId() {
-        return customerId;
-    }
+    private int budget;
 
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
 }

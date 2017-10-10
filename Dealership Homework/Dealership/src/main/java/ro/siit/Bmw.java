@@ -1,17 +1,11 @@
 package ro.siit;
 
 /**
- * Created by Dani on 25-Aug-17.
+ * Created by Dani on 10-Oct-17.
  */
 public class Bmw extends ElectricVehicle {
 
-    private String bmwSpecificThing;
-
-    public String getBmwSpecificThing() {
-        return bmwSpecificThing;
-    }
-
-    public void setBmwSpecificThing(String bmwSpecificThing) {
-        this.bmwSpecificThing = bmwSpecificThing;
+    public Bmw(String manufacturer, String vehicleModel, double motorPower, float batteryCapacity, int range, boolean hasFastCharging, float price, int stockNr, boolean isNew) {
+        super(manufacturer, vehicleModel, motorPower, batteryCapacity, range, hasFastCharging, price, stockNr, isNew);
     }
 }

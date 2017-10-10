@@ -1,41 +1,14 @@
 package ro.siit;
 
 /**
- * Created by Dani on 25-Aug-17.
+ * Created by Dani on 10-Oct-17.
  */
 public class Dealership {
 
     private String dealershipName = "Get Electric";
-    private int vehicleId;
-    private double price;
-    private int stockNo;
 
-    public String getDealershipName() {
-        return dealershipName;
-    }
+    private Customer[] customers;
 
-    public int getVehicleId() {
-        return vehicleId;
-    }
+    private ElectricVehicle[] electricVehicles;
 
-    public void setVehicleId(int vehicleId) {
-        this.vehicleId = vehicleId;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getStockNo() {
-        return stockNo;
-    }
-
-    public void setStockNo(int stockNo) {
-        this.stockNo = stockNo;
-    }
 }
-

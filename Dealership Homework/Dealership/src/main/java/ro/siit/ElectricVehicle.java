@@ -1,62 +1,65 @@
 package ro.siit;
 
 /**
- * Created by Dani on 25-Aug-17.
+ * Created by Dani on 10-Oct-17.
  */
-public class ElectricVehicle extends Manufacturer {
+public class ElectricVehicle {
 
+    private String manufacturer;
     private String vehicleModel;
-    private float motorPower;
+    private double motorPower;
     private float batteryCapacity;
-    private int energyConsumption;
+    private int range;
+    private boolean hasFastCharging;
+    private float price;
+    private int stockNr;
     private boolean isNew;
-    private int productionYear;
+
+    public ElectricVehicle(String manufacturer, String vehicleModel, double motorPower, float batteryCapacity, int range, boolean hasFastCharging, float price, int stockNr, boolean isNew) {
+        this.manufacturer = manufacturer;
+        this.vehicleModel = vehicleModel;
+        this.motorPower = motorPower;
+        this.batteryCapacity = batteryCapacity;
+        this.range = range;
+        this.hasFastCharging = hasFastCharging;
+        this.price = price;
+        this.stockNr = stockNr;
+        this.isNew = isNew;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
 
     public String getVehicleModel() {
         return vehicleModel;
     }
 
-    public void setVehicleModel(String vehicleModel) {
-        this.vehicleModel = vehicleModel;
-    }
-
-    public float getMotorPower() {
+    public double getMotorPower() {
         return motorPower;
-    }
-
-    public void setMotorPower(float motorPower) {
-        this.motorPower = motorPower;
     }
 
     public float getBatteryCapacity() {
         return batteryCapacity;
     }
 
-    public void setBatteryCapacity(float batteryCapacity) {
-        this.batteryCapacity = batteryCapacity;
+    public int getRange() {
+        return range;
     }
 
-    public int getEnergyConsumption() {
-        return energyConsumption;
+    public boolean isHasFastCharging() {
+        return hasFastCharging;
     }
 
-    public void setEnergyConsumption(int energyConsumption) {
-        this.energyConsumption = energyConsumption;
+    public float getPrice() {
+        return price;
+    }
+
+    public int getStockNr() {
+        return stockNr;
     }
 
     public boolean isNew() {
         return isNew;
-    }
-
-    public void setNew(boolean aNew) {
-        isNew = aNew;
-    }
-
-    public int getProductionYear() {
-        return productionYear;
-    }
-
-    public void setProductionYear(int productionYear) {
-        this.productionYear = productionYear;
     }
 }
