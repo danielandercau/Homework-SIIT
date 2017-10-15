@@ -1,6 +1,11 @@
 package ro.siit;
 
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -9,11 +14,15 @@ import java.util.*;
 public class Main {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        Customer c = new Customer();
+        Customer customer = new Customer("Dorel", 40000);
 
-        c.carPurchase();
+        EVReader eVReader = new EVReader(new BufferedReader(new FileReader("ElectricVehicles.csv")));
+        List<ElectricVehicle> vehicleView = eVReader.readVehicles();
+        eVReader.close();
+
+        customer.viewAllVehiclesList(vehicleView);
 
     }
 }

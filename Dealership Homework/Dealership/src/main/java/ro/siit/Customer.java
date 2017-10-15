@@ -1,276 +1,388 @@
 package ro.siit;
 
+import java.io.*;
 import java.util.*;
 
 /**
- * Created by Dani on 18-Sep-17.
+ * Created by Dani on 08-Oct-17.
  * This is the Customer class, which represents the customer's available actions towards the Dealership.
  */
 public class Customer {
 
+    private String customerName;
+    private int customerId;
+    private int budget;
+    private int option;
+    private GreenBonusProgram gb = new GreenBonusProgram();
+    private Dealership checkStock = new Dealership();
+    private Dealership requestGBP = new Dealership();
+    private Scanner s = new Scanner(System.in);
+    private int checkProgram;
+
+    public Customer(String customerName, int budget) {
+        this.customerName = customerName;
+        this.budget = budget;
+    }
+
     /**
-     * This method allows the customer to filter and sort the vehicle list.
-     * This method also allows the customer to "purchase" a vehicle based on a number of conditions.
+     * This method displays the vehicle list to the customer.
+     * When this method is over, it calls the sortVehicles() method.
+     *
+     * @param list = The list imported from ElectricVehicles.csv file.
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public void carPurchase() {
-        Scanner s = new Scanner(System.in);
+    public void viewAllVehiclesList(List<ElectricVehicle> list) throws IOException, ClassNotFoundException {
 
-        //This list represents a view for the customer, based on the dealership's "database" located in the Dealership class.
+        for (ElectricVehicle v : list) {
+            System.out.println(v.getManufacturer() + "\n Model: " + v.getVehicleModel() + "\n Power: " + v.getMotorPower() + " kW " +
+                    "\t Battery: " + v.getBatteryCapacity() + " kWh" + "\t Range: " + v.getRange() + " km " + "\t Fast Charging: " + v.isHasFastCharging() +
+                    "\t New: " + v.isNew() + "\t Price: " + v.getPrice() + " Euro" + "\t Stock No.: " + v.getStockNr() + "\n");
+        }
+        sortVehicles(list);
+    }
 
-        List<View> viewVehicleList = new ArrayList<>();
+    /**
+     * This method allows the customer to filter the vehicle list based on Price, Motor Power, and Range.
+     * When this method is over, it calls the filterVehicles() method.
+     *
+     * @param list = The list imported from ElectricVehicles.csv file.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void sortVehicles(List<ElectricVehicle> list) throws IOException, ClassNotFoundException {
 
-        viewVehicleList.add(new View("BMW", "i3", 40, 50, 230, true, 40000, 5));
-        viewVehicleList.add(new View("Hyundai", "Ioniq", 120, 28, 180, false, 36000, 3));
-        viewVehicleList.add(new View("Kia", "Soul", 109, 30, 150, false, 33000, 6));
-        viewVehicleList.add(new View("Renault", "Zoe", 90, 22, 200, true, 38000, 0));
-        viewVehicleList.add(new View("Smart", "ForTwo", 80, 18, 129, true, 32000, 20));
-        viewVehicleList.add(new View("Smart", "ForTwoCabrio", 80, 18, 129, true, 34000, 2));
-        viewVehicleList.add(new View("Smart", "ForFour", 80, 18, 129, true, 36000, 4));
-        viewVehicleList.add(new View("VW", "e-UP", 82, 19, 160, true, 33000, 15));
-        viewVehicleList.add(new View("VW", "e-Golf", 115, 36, 201, true, 38500, 0));
+        PriceComparator priceComparator = new PriceComparator();
+        RangeComparator rangeComparator = new RangeComparator();
+        MotorPowerComparator motorPowerComparator = new MotorPowerComparator();
 
-
-        //This series of if and switch statements allow the customer to filter, sort, and buy a vehicle.
-        System.out.println("Do you want to sort the vehicle list? y/n ");
+        System.out.println("Do you want the vehicle list to be sorted by an attribute? y/n ");
         String verifySort = s.next();
-        //This part executes if the customer wishes to sort the vehicles.
         if (verifySort.equals("y")) {
+
             System.out.println("Please input the sorting attribute: price = p, range = r, motor power = m");
             String verifyAttribute = s.next();
-            //This switch statement allows the customer to sort the list based on price, range and motor power
             switch (verifyAttribute) {
 
-                //This part executes if the customer wishes to sort the vehicles based on the price.
                 case "p":
-                    Collections.sort(viewVehicleList, new Comparator<View>() {
-                        @Override
-                        public int compare(View o1, View o2) {
-                            return (int) (o1.getPrice() - o2.getPrice());
-                        }
-                    });
-
-                    System.out.println("Do you want to exclude the vehicles which are not in stock? y/n");
-                    String verifyFilterPS = s.next();
-
-                    //This if excludes the vehicles that are not in stock if the customer wishes so.
-                    if (verifyFilterPS.equals("y")) {
-                        System.out.println("Do you also want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPSF = s.next();
-                        //This if excludes the vehicles that do not have fast charging if the customer wishes so.
-                        if (verifyFilterPSF.equals("y")) {
-                            for (View v : getVehiclesInStockList(getFastChargingList(viewVehicleList))) {
-                                System.out.println(v);
-                            }
-                        } else {
-                            for (View v : getVehiclesInStockList(viewVehicleList)) {
-                                System.out.println(v);
-                            }
-                        }
-                    } else {
-                        System.out.println("Do you want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPF = s.next();
-                        //This if includes the vehicles that are not in stock and exclude the vehicles that do not have fast charging  if the customer wishes so.
-                        if (verifyFilterPF.equals("y")) {
-                            for (View v : getFastChargingList(viewVehicleList))
-                                System.out.println(v);
-                        } else {
-                            for (View v : viewVehicleList)
-                                System.out.println(v);
-                        }
-                    }
+                    Collections.sort(list, priceComparator);
                     break;
 
-                //This part executes if the customer wishes to sort the vehicles based on the motor power.
                 case "m":
-                    Collections.sort(viewVehicleList, new Comparator<View>() {
-                        @Override
-                        public int compare(View o1, View o2) {
-                            return (int) (o1.getMotorPower() - o2.getMotorPower());
-                        }
-                    });
-                    System.out.println("Do you want to exclude the vehicles which are not in stock? y/n");
-                    String verifyFilterPM = s.next();
-
-                    //This if excludes the vehicles that are not in stock if the customer wishes so.
-                    if (verifyFilterPM.equals("y")) {
-                        System.out.println("Do you also want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPMF = s.next();
-                        //This if excludes the vehicles that do not have fast charging if the customer wishes so.
-                        if (verifyFilterPMF.equals("y")) {
-                            for (View v : getVehiclesInStockList(getFastChargingList(viewVehicleList))) {
-                                System.out.println(v);
-                            }
-                        } else {
-                            for (View v : getVehiclesInStockList(viewVehicleList)) {
-                                System.out.println(v);
-                            }
-                        }
-                    } else {
-                        System.out.println("Do you want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPF = s.next();
-                        //This if includes the vehicles that are not in stock and exclude the vehicles that do not have fast charging  if the customer wishes so.
-                        if (verifyFilterPF.equals("y")) {
-                            for (View v : getFastChargingList(viewVehicleList))
-                                System.out.println(v);
-                        } else {
-                            for (View v : viewVehicleList)
-                                System.out.println(v);
-                        }
-                    }
+                    Collections.sort(list, motorPowerComparator);
                     break;
 
-                //This part executes if the customer wishes to sort the vehicles based on the vehicle's range.
                 case "r":
-                    Collections.sort(viewVehicleList, new Comparator<View>() {
-                        @Override
-                        public int compare(View o1, View o2) {
-                            return (o1.getRange() - o2.getRange());
-                        }
-                    });
-                    System.out.println("Do you want to exclude the vehicles which are not in stock? y/n");
-                    String verifyFilterPR = s.next();
-
-                    //This if excludes the vehicles that are not in stock if the customer wishes so.
-                    if (verifyFilterPR.equals("y")) {
-                        System.out.println("Do you also want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPRF = s.next();
-                        //This if excludes the vehicles that do not have fast charging if the customer wishes so.
-                        if (verifyFilterPRF.equals("y")) {
-                            for (View v : getVehiclesInStockList(getFastChargingList(viewVehicleList))) {
-                                System.out.println(v);
-                            }
-                        } else {
-                            for (View v : getVehiclesInStockList(viewVehicleList)) {
-                                System.out.println(v);
-                            }
-                        }
-                    } else {
-                        System.out.println("Do you want to exclude the vehicles that do not have fast charging? y/n");
-                        String verifyFilterPF = s.next();
-                        //This if includes the vehicles that are not in stock and exclude the vehicles that do not have fast charging  if the customer wishes so.
-                        if (verifyFilterPF.equals("y")) {
-                            for (View v : getFastChargingList(viewVehicleList))
-                                System.out.println(v);
-                        } else {
-                            for (View v : viewVehicleList)
-                                System.out.println(v);
-                        }
-                    }
+                    Collections.sort(list, rangeComparator);
                     break;
+
+                default:
+                    //If the user types anything else except "p", "m", or "r", an exception will be thrown.
+                    throw new IllegalArgumentException("Only \"p\", \"m\", or \"r\" options can be used.");
+
             }
+            filterVehicles(list);
 
+        } else if (verifySort.equals("n")) {
+            filterVehicles(list);
         } else {
-            System.out.println("Do you want to exclude the vehicles which are not in stock? y/n");
-            String verifyFilterPS = s.next();
+            //If the user types anything else except "y" or "n", an exception will be thrown.
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
+        }
+    }
 
-            //This if excludes the vehicles that are not in stock if the customer wishes so.
-            if (verifyFilterPS.equals("y")) {
-                System.out.println("Do you also want to exclude the vehicles that do not have fast charging? y/n");
-                String verifyFilterPSF = s.next();
-                //This if excludes the vehicles that do not have fast charging if the customer wishes so.
-                if (verifyFilterPSF.equals("y")) {
-                    for (View v : getVehiclesInStockList(getFastChargingList(viewVehicleList))) {
-                        System.out.println(v);
-                    }
-                } else {
-                    for (View v : getVehiclesInStockList(viewVehicleList)) {
-                        System.out.println(v);
-                    }
+    /**
+     * This method allows the customer to filter out the vehicles which are not in stock or the ones which do not have fast charging.
+     * When this method is over, if the customer wants to buy a car, it calls the chooseVehicles() method.
+     * If the customer does not want to buy a car, the program is closed.
+     * If the customer types anything else except "y" or "n" as answers, an exception will be thrown.
+     *
+     * @param list = The list imported from ElectricVehicles.csv file.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void filterVehicles(List<ElectricVehicle> list) throws IOException, ClassNotFoundException {
+
+        List<ElectricVehicle> sortedList = list;
+
+        System.out.println("Do you want to exclude the vehicles which are not in stock? y/n");
+        String verifyFilterPS = s.next();
+
+
+        if (verifyFilterPS.equals("y")) {
+            System.out.println("Do you also want to exclude the vehicles that do not have fast charging? y/n");
+            String verifyFilterPSF = s.next();
+            if (verifyFilterPSF.equals("y")) {
+                //This happens when the customer wants to use both filters.
+                for (ElectricVehicle v : getVehiclesInStockList(getFastChargingList(list))) {
+                    System.out.println(v.getManufacturer() + " " + v.getVehicleModel() + "\n Power: " + v.getMotorPower() + " kW " +
+                            "\t Range: " + v.getRange() + " km " + "\t Fast Charging: " + v.isHasFastCharging() +
+                            "\t New: " + v.isNew() + "\t Price: " + v.getPrice() + " Euro" + "\t Stock No.: " + v.getStockNr() + "\n");
+                }
+            } else if (verifyFilterPSF.equals("n")) {
+                //This happens when the customer wants to only use the stock filter.
+                for (ElectricVehicle v : getVehiclesInStockList(list)) {
+                    System.out.println(v.getManufacturer() + " " + v.getVehicleModel() + "\n Power: " + v.getMotorPower() + " kW " +
+                            "\t Range: " + v.getRange() + " km " + "\t Fast Charging: " + v.isHasFastCharging() +
+                            "\t New: " + v.isNew() + "\t Price: " + v.getPrice() + " Euro" + "\t Stock No.: " + v.getStockNr() + "\n");
                 }
             } else {
-                System.out.println("Do you want to exclude the vehicles that do not have fast charging? y/n");
-                String verifyFilterPF = s.next();
-                //This if includes the vehicles that are not in stock and exclude the vehicles that do not have fast charging  if the customer wishes so.
-                if (verifyFilterPF.equals("y")) {
-                    for (View v : getFastChargingList(viewVehicleList))
-                        System.out.println(v);
-                } else {
-                    for (View v : viewVehicleList)
-                        System.out.println(v);
-                }
+                throw new IllegalArgumentException("Only y or n options can be used.");
             }
-
+        } else if (verifyFilterPS.equals("n")) {
+            System.out.println("Do you want to exclude the vehicles that do not have fast charging? y/n");
+            String verifyFilterPF = s.next();
+            if (verifyFilterPF.equals("y")) {
+                //This happens when the customer wants to only use the fast-charging filter.
+                for (ElectricVehicle v : getFastChargingList(list))
+                    System.out.println(v.getManufacturer() + " " + v.getVehicleModel() + "\n Power: " + v.getMotorPower() + " kW " +
+                            "\t Range: " + v.getRange() + " km " + "\t Fast Charging: " + v.isHasFastCharging() +
+                            "\t New: " + v.isNew() + "\t Price: " + v.getPrice() + " Euro" + "\t Stock No.: " + v.getStockNr() + "\n");
+            } else if (verifyFilterPF.equals("n")) {
+                //This happens when the customer wants to use no filters.
+                for (ElectricVehicle v : list) {
+                    System.out.println(v.getManufacturer() + " " + v.getVehicleModel() + "\n Power: " + v.getMotorPower() + " kW " +
+                            "\t Range: " + v.getRange() + " km " + "\t Fast Charging: " + v.isHasFastCharging() +
+                            "\t New: " + v.isNew() + "\t Price: " + v.getPrice() + " Euro" + "\t Stock No.: " + v.getStockNr() + "\n");
+                }
+            } else {
+                throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
+            }
+        } else {
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
         }
-
-        GreenBonusProgram gb = new GreenBonusProgram();
 
         System.out.println("Do you want to buy a car? y/n");
         String buy = s.next();
-        //This if executes if the customer decides to buy a vehicle.
         if (buy.equals("y")) {
-            System.out.println("Which car do you want to buy?");
-            int j = 0;
-            //This for loop displays the vehicle list, hiding the vehicles that are not in stock.
-            for (View v : viewVehicleList) {
-                if ((v.getStockNr()) > 0) {
-                    System.out.println(j + " " + v.getManufacturer() + " " + v.getVehicleModel());
-                }
-                j++;
+            chooseVehicle();
+        } else if (buy.equals("n")) {
+            System.out.println("Thank you for visiting!");
+        } else {
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
+        }
+
+    }
+
+    /**
+     * This class prints the available vehicles for purchase, excluding the ones that are not in stock since they cannot be purchased.
+     * From this point forward, the List which the program will use will not be the ViewList, but the Database list, generated from the same ElectricVehicles.csv file.
+     * This is necessary since we do not want this list sorted and filtered instead we want all the vehicles available for purchase to be displayed to maximize the Dealership's
+     * chance for a vehicle to be sold.
+     * When this method is over, if the customer wishes to buy a vehicle the useGreenBonusProgram() method will be called, which handles the exceptional case in which the customer
+     * tries to purchase a vehicle which is not in stock
+     * or a vehicle which does not exist.
+     * If the customer does not want to buy a vehicle, the program will close.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void chooseVehicle() throws IOException, ClassNotFoundException {
+
+
+        EVReader eVReader = new EVReader(new BufferedReader(new FileReader("ElectricVehicles.csv")));
+        List<ElectricVehicle> database = eVReader.readVehicles();
+        eVReader.close();
+
+        System.out.println("Which car do you want to buy?");
+
+        int j = 0;
+        //This algorithm iterates through the vehicles which are available for purchase and displays them.
+        for (ElectricVehicle v : database) {
+            if ((v.getStockNr()) > 0) {
+                System.out.println(j + " " + v.getManufacturer() + " " + v.getVehicleModel());
             }
-            int option = s.nextInt();
-            System.out.println("Do you want to use the Green Bonus Program? y/n");
-            String gbp = s.next();
-            //This if statement executes if the customer decides to use the Green Bonus Program.
-            if (gbp.equals("y")) {
-                //This if statement executes if the Green Bonus Program has enough funds.
-                if (gb.checkBudget()) {
-                    System.out.println("Congratulations on your new car, please come to the office to complete the payment and paperwork.");
-                    int x = viewVehicleList.get(option).getStockNr();
-                    viewVehicleList.get(option).setStockNr(x - 1);
-                } else if (!gb.checkBudget()) {
-                    System.out.println("We are sorry, but the Green Bonus Program doesn't have enough funds at this moment");
-                    System.out.println("Do you want to buy the car at full price? y/n");
-                    String fullPrice = s.next();
-                    //This if statement executes if the customer decides not to use the Green bonus program.
-                    if (fullPrice.equals("y")) {
-                        System.out.println("Congratulations on your new car, please come to the office to complete the payment and paperwork.");
-                        int x = viewVehicleList.get(option).getStockNr();
-                        viewVehicleList.get(option).setStockNr(x - 1);
+            j++;
+        }
+        useGreenBonusProgram();
+    }
+
+    /**
+     * This method asks the client a series of questions about the Green Bonus Program (if he wants to use it or not, and so on) and also does not allow the customer to
+     * purchase a vehicle if it exceeds his budget with or without the Green Bonus Program funding, with the Green Bonus Program funding if the car is not new, and also if the vehicle is not in stock.
+     *
+     * @return Returns the checkProgram integer as 0, 1, or 2 depending on the answers of the customer, on his budget, on the Green Bonus Program, and also on the stock number of the desired vehicle.
+     * The integer's value will determine the outcome if the next method called, purchaseVehicle().
+     * @throws IllegalArgumentException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public int useGreenBonusProgram() throws IllegalArgumentException, IOException, ClassNotFoundException {
+
+        option = s.nextInt();
+
+        if (option > 8) {
+            //If the customer types anything else except the index of the displayed vehicles as answers, an exception will be thrown.
+            throw new IllegalArgumentException("You can only choose between 0 and 8.");
+        }
+
+        EVReader eVReader = new EVReader(new BufferedReader(new FileReader("ElectricVehicles.csv")));
+        List<ElectricVehicle> database = eVReader.readVehicles();
+        eVReader.close();
+
+        System.out.println("Do you want to use the Green Bonus Program? y/n");
+        String gbp = s.next();
+
+        if (gbp.equals("y")) {
+
+            if (gb.checkFunds()) {
+                if (checkStock.checkIfCarIsInStock(database.get(option))) {
+                    if ((budget + 10000 >= database.get(option).getPrice())) {
+                        if ((requestGBP.checkIfDealershipCanGrantFunds(database.get(option)))) {
+                            checkProgram = 1;
+                            purchaseVehicle();
+                            return checkProgram;
+                        } else {
+                            checkProgram = 0;
+                            purchaseVehicle();
+                            return checkProgram;
+                        }
                     } else {
-                        System.out.println("Thank you for visiting!");
+                        System.out.println("The vehicle's price exceeds your budget!");
+                        checkProgram = 2;
+                        purchaseVehicle();
+                        return checkProgram;
                     }
+                } else {
+                    System.out.println("The vehicle is not in stock!");
+                    checkProgram = 2;
+                    purchaseVehicle();
+                    return checkProgram;
                 }
 
-            } else {
-                System.out.println("Congratulations on your new car, please come to the office to complete the payment and paperwork.");
-                int x = viewVehicleList.get(option).getStockNr();
-                viewVehicleList.get(option).setStockNr(x - 1);
+            } else if (!gb.checkFunds()) {
+                System.out.println("We are sorry, but the Green Bonus Program doesn't have enough funds at this moment");
+                checkProgram = 0;
+                purchaseVehicle();
+                return checkProgram;
             }
+        } else if (gbp.equals("n")) {
+            checkProgram = 0;
+            purchaseVehicle();
+            return checkProgram;
         } else {
-            System.out.println("Thank you for visiting!");
+            //If the customer types anything else except "y" or "n" as answers, an exception will be thrown.
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
+        }
+        return checkProgram = 3;
+    }
+
+    /**
+     * This method receives the checkProgram integer returned by the previous method (useGreenBonusProgram()), and it determines if the purchase can be made.
+     *  This method allows the purchase to be made with the Green Bonus Program or without it.
+     *  If none of the purchases are possible, this algorithm calls the anotherCar() method.
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void purchaseVehicle() throws IOException, ClassNotFoundException {
+
+        Dealership checkStock = new Dealership();
+
+        EVReader eVReader = new EVReader(new BufferedReader(new FileReader("ElectricVehicles.csv")));
+        List<ElectricVehicle> database = eVReader.readVehicles();
+        eVReader.close();
+
+
+        if (checkProgram == 1) {
+            gb.getFunds();
+            successfulPurchase(database);
+            gb.subtractFunds();
+        } else if (checkProgram == 0) {
+            System.out.println("Do you want to buy the car at full price? y/n");
+            purchaseFullPrice(checkStock, database);
+        } else if (checkProgram == 2) {
+            anotherCar();
+
+        }
+
+    }
+
+    /**
+     * This method is used if the vehicle can only be bought without the Green Bonus Program funding. It doesn't allow the customer to buy the vehicle if it is out of stock
+     * or if the customer's budget is not sufficient.
+     * If the purchase is not possible, this algorithm calls the anotherCar() method.
+     * If the customer types anything else except "y" or "n" as answers, an exception will be thrown.
+     *
+     * @param checkStock = Object on which the checkIfCarIsInStock() method is called, which doesn't allow the vehicle to be purchased if it's stock number is 0.
+     * @param vehicleList = The vehicle list received, in our case, the database list.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void purchaseFullPrice(Dealership checkStock, List<ElectricVehicle> vehicleList) throws IOException, ClassNotFoundException {
+        String fullPrice = s.next();
+        if (fullPrice.equals("y")) {
+            if (checkStock.checkIfCarIsInStock(vehicleList.get(option))) {
+                if (budget >= vehicleList.get(option).getPrice()) {
+                    successfulPurchase(vehicleList);
+                } else {
+                    System.out.println("This vehicle's price exceeds your budget!");
+                    anotherCar();
+                }
+            } else {
+                System.out.println("The vehicle is not in stock");
+                anotherCar();
+            }
+        } else if (fullPrice.equals("n")) {
+            anotherCar();
+        } else {
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
         }
     }
 
-    private String customerName;
-    private int customerId;
-
-    public String getCustomerName() {
-        return customerName;
+    /**
+     * This method is used when the vehicle is successfully purchased, whether the purchase was made with funding from the Green Bonus Program or not.
+     * This method also overwrites the ElectricVehicles.csv file so that the the stocks of the vehicles are updated if a successful purchase is made.
+     * @param database = The list received to be overwritten in order for it to be updated.
+     * @throws IOException
+     */
+    public void successfulPurchase(List<ElectricVehicle> database) throws IOException {
+        System.out.println("Congratulations on your new car, please come to the office to complete the payment and paperwork.");
+        subtractStockByOne(database, option);
+        EVWriter evWriter = new EVWriter(new BufferedWriter(new FileWriter("ElectricVehicles.csv")));
+        for (ElectricVehicle v : database) {
+            evWriter.writeVehicles(v);
+        }
+        evWriter.flush();
+        evWriter.close();
     }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public int getCustomerId() {
-        return customerId;
-    }
-
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
 
     /**
-     * This method filters the vehicle list based on the fast charging parameter.
-     *
-     * @param fastChargingList This parameter receives the vehicle list to be sorted.
-     * @return The method returns the sorted list based on the fast charging parameter.
+     * This method is called whenever a purchase was unsuccessful.
+     * If the user wants to try buying a different vehicle, the chooseVehicle() method will be called. Otherwise, the program will be terminated.
+     * If the customer types anything else except "y" or "n" as answers, an exception will be thrown.
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public List<View> getFastChargingList(List<View> fastChargingList) {
-        List<View> tempList = new ArrayList<>();
-        for (View v : fastChargingList) {
+    public void anotherCar() throws IOException, ClassNotFoundException {
+        System.out.println("Do you want to buy another car? y/n");
+        String another = s.next();
+        if (another.equals("y")) {
+            chooseVehicle();
+        } else if (another.equals("n")) {
+            System.out.println("Thank you for visiting!");
+        } else {
+            throw new IllegalArgumentException("Only \"y\" or \"n\" options can be used.");
+        }
+    }
+
+    /**
+     * This method subtracts the stock of a vehicle when it has been purchased by a customer.
+     * @param electricVehicleList = The list that contains the vehicles.
+     * @param option = The vehicle the customer chose to purchase.
+     */
+    public void subtractStockByOne(List<ElectricVehicle> electricVehicleList, int option) {
+        int x = electricVehicleList.get(option).getStockNr();
+        electricVehicleList.get(option).setStockNr(x - 1);
+    }
+
+    /**
+     * This method filters the vehicles list so it doesn't contain non fast-charging vehicles.
+     * @param fastChargingList = The vehicle list.
+     * @return The filtered list, without fast-charging vehicles.
+     */
+    public List<ElectricVehicle> getFastChargingList(List<ElectricVehicle> fastChargingList) {
+        List<ElectricVehicle> tempList = new ArrayList<>();
+        for (ElectricVehicle v : fastChargingList) {
             if (v.isHasFastCharging()) {
                 tempList.add(v);
             }
@@ -279,19 +391,23 @@ public class Customer {
     }
 
     /**
-     * This method filters the vehicle list based on the stock parameter.
-     *
-     * @param stockList This parameter receives the vehicle list to be sorted.
-     * @return The method returns the sorted list based on the stock parameter.
+     * This method filters the vehicles list so it doesn't contain vehicles that are not in stock.
+     * @param stockList = The vehicle list.
+     * @return = The filtered list, without vehicles which are not in stock.
      */
-    public List<View> getVehiclesInStockList(List<View> stockList) {
-        List<View> tempList = new ArrayList<>();
-        for (View v : stockList) {
+    public List<ElectricVehicle> getVehiclesInStockList(List<ElectricVehicle> stockList) {
+        List<ElectricVehicle> tempList = new ArrayList<>();
+        for (ElectricVehicle v : stockList) {
             if (v.getStockNr() > 0) {
                 tempList.add(v);
             }
         }
         return tempList;
     }
+
+    public int getBudget() {
+        return budget;
+    }
 }
+
 
